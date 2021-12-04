@@ -5,6 +5,7 @@
  */
 package socketrmi;
 
+import java.sql.*;
 import java.io.DataOutputStream;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
@@ -54,11 +55,40 @@ public class ServidorRMI {
         }
     }
 
-    public static String consultar_pecas(){
-    
-        return "";
-    };
-    
+    public static String consultar_pecas(int codigo) {
+
+        //Apanhar as credencias de acesso a base de dados nas variaveis de ambiente;
+        String db_user = System.getenv("BD_USER");
+        String db_pass = System.getenv("BD_PASS");
+
+        String pecaQtd = "";
+
+        try {
+            // create a mysql database connection
+            String myUrl = "jdbc:mysql://localhost:3306/teste?useTimezone=true&serverTimezone=UTC";
+            //Class.forName(myDriver);
+            Connection connect = DriverManager.getConnection(myUrl, db_user, db_pass);
+
+            // the mysql select statement
+            String sql = "SELECT * FROM pecas WHERE codigo = ? ";
+            PreparedStatement pstm = connect.prepareStatement(sql);
+            pstm.setInt(1, codigo);
+            ResultSet rs = pstm.executeQuery();
+
+            while (rs.next()) {
+                pecaQtd = rs.getString("quantidade");
+            }
+            rs.close();
+            pstm.close();
+
+            connect.close();
+
+        } catch (Exception e) {
+            System.err.println("\nGot an exception!" + e.getMessage());
+        }
+        return pecaQtd;
+    }
+
     public static void main(String[] args) throws RemoteException, MalformedURLException {
         LocateRegistry.createRegistry(1099);
         System.setProperty("java.rmi.server.hostname", "localhost");
