@@ -24,6 +24,19 @@ import java.text.SimpleDateFormat;
  */
 public class ServidorRMI {
 
+    private static Connection BD_Conexao() throws SQLException {
+        //Apanhar as credencias de acesso a base de dados nas variaveis de ambiente;
+        String db_user = System.getenv("BD_USER");
+        String db_pass = System.getenv("BD_PASS");
+
+        // create a mysql database connection
+        String myUrl = "jdbc:mysql://localhost:3306/teste?useTimezone=true&serverTimezone=UTC";
+        //Class.forName(myDriver);
+        Connection connect = DriverManager.getConnection(myUrl, db_user, db_pass);
+
+        return connect;
+    };
+
     private static String getDate() {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         Date date = new Date();
@@ -32,17 +45,11 @@ public class ServidorRMI {
 
     public static void entrada_veiculo(String matricula, String dono, String problema) {
 
-        //Apanhar as credencias de acesso a base de dados nas variaveis de ambiente;
-        String db_user = System.getenv("BD_USER");
-        String db_pass = System.getenv("BD_PASS");
-        
         String data = getDate();
-        
+
         try {
-            // create a mysql database connection
-            String myUrl = "jdbc:mysql://localhost:3306/teste?useTimezone=true&serverTimezone=UTC";
-            //Class.forName(myDriver);
-            Connection connect = DriverManager.getConnection(myUrl, db_user, db_pass);
+
+            Connection connect = BD_Conexao();
 
             // the mysql insert statement
             String query = "insert into entrada_veiculo (matricula,dono,data_entrada,problema) values (?,?,?,?)";
@@ -68,17 +75,10 @@ public class ServidorRMI {
 
     public static String consultar_peca(int codigo) {
 
-        //Apanhar as credencias de acesso a base de dados nas variaveis de ambiente;
-        String db_user = System.getenv("BD_USER");
-        String db_pass = System.getenv("BD_PASS");
-
         String pecaQtd = "";
 
         try {
-            // create a mysql database connection
-            String myUrl = "jdbc:mysql://localhost:3306/teste?useTimezone=true&serverTimezone=UTC";
-            //Class.forName(myDriver);
-            Connection connect = DriverManager.getConnection(myUrl, db_user, db_pass);
+            Connection connect = BD_Conexao();
 
             // the mysql select statement
             String sql = "SELECT * FROM pecas WHERE codigo = ? ";
@@ -102,17 +102,11 @@ public class ServidorRMI {
 
     public static void saida_veiculo(int entrada_veiculoID, String solucao) {
 
-        //Apanhar as credencias de acesso a base de dados nas variaveis de ambiente;
-        String db_user = System.getenv("BD_USER");
-        String db_pass = System.getenv("BD_PASS");
-
         String data = getDate();
-        
+
         try {
-            // create a mysql database connection
-            String myUrl = "jdbc:mysql://localhost:3306/teste?useTimezone=true&serverTimezone=UTC";
-            //Class.forName(myDriver);
-            Connection connect = DriverManager.getConnection(myUrl, db_user, db_pass);
+
+            Connection connect = BD_Conexao();
 
             // the mysql insert statement
             String query = "insert into saida_veiculo (entrada_veiculoID,data_saida,solucao) values (?,?,?)";
@@ -135,20 +129,13 @@ public class ServidorRMI {
         }
 
     }
-    
-    public static String consultar_pecasALL(){
-        
-        //Apanhar as credencias de acesso a base de dados nas variaveis de ambiente;
-        String db_user = System.getenv("BD_USER");
-        String db_pass = System.getenv("BD_PASS");
+
+    public static String consultar_pecasALL() {
 
         String pecaQtd = "";
 
         try {
-            // create a mysql database connection
-            String myUrl = "jdbc:mysql://localhost:3306/teste?useTimezone=true&serverTimezone=UTC";
-            //Class.forName(myDriver);
-            Connection connect = DriverManager.getConnection(myUrl, db_user, db_pass);
+            Connection connect = BD_Conexao();
 
             // the mysql select statement
             String sql = "SELECT * FROM pecas;";
@@ -166,7 +153,7 @@ public class ServidorRMI {
         } catch (Exception e) {
             System.err.println("\nGot an exception!" + e.getMessage());
         }
-        
+
         return "";
     }
 
@@ -177,5 +164,13 @@ public class ServidorRMI {
         Naming.rebind("testeHello", new ImplHello());
         System.out.println("Serviço disponivel....");
         
+        String matricula = "so-43-st";
+        String dono = "Denilon";
+        String problema = "Pneu Furada";
+        int codigo = 1;
+        int entrada_veiculoID = 1;
+        
+        //entrada_veiculo(, );
+
     }
 }
